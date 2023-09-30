@@ -13,15 +13,32 @@ if (canvas) {
         height: 720,
     });
 
+    const resumeButton = document.createElement("button");
+    resumeButton.innerText = "Resume";
+    resumeButton.disabled = true;
+
     const stopButton = document.createElement("button");
     stopButton.innerText = "Stop";
-    stopButton.addEventListener("click", () => {
-        fishies.destroy();
-        stopButton.disabled = true;
-    });
-    document.body.append(stopButton);
 
+    resumeButton.addEventListener("click", () => {
+        fishies.start();
+        resumeButton.disabled = true;
+        stopButton.disabled = false;
+    });
+    stopButton.addEventListener("click", () => {
+        fishies.stop();
+        stopButton.disabled = true;
+        resumeButton.disabled = false;
+    });
+
+    document.body.append(resumeButton);
+    document.body.append(stopButton);
     fishies.render();
+
+    // TODO: event to move the loop into the consumer
+    // fishies.on("clear", () => {
+    //     fishies.render();
+    // })
 }
 
 export { };

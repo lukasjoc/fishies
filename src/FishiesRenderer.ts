@@ -18,18 +18,15 @@ type Figure = {
     interval?: ReturnType<typeof setInterval>;
     speed: number;
     // TODO: allow multi-color
-    fillStyle: "blue" | "black";
+    fillStyle: `#${string}` | "white" | "black";
 }
 
-/**
- * FishiesRenderer...
- * TODO: docs
-*/
 class FishiesRenderer {
+    private figures: Figure[] = [];
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    private figures: Figure[] = [];
-    private fontsize: number;
+    private fontsize: number = 24;
+    private background: string = "#02172d";
     constructor(canvas: HTMLCanvasElement, config: RendererConfig) {
         canvas.width = config.width;
         canvas.height = config.height;
@@ -42,7 +39,6 @@ class FishiesRenderer {
             throw new Error("could not render fishies. Context2D missing!");
         }
         this.context = context;
-        this.fontsize = 24;
         this.context.font = `${this.fontsize}px monospace`;
     }
 
@@ -52,7 +48,7 @@ class FishiesRenderer {
             movex: 10, movey: 0,
             maxWidth: 50,
             shape: "><>",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -62,7 +58,7 @@ class FishiesRenderer {
             movex: 10, movey: 0,
             maxWidth: 50,
             shape: "><>",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -71,7 +67,7 @@ class FishiesRenderer {
             movex: 10, movey: 0,
             maxWidth: 50,
             shape: "><>",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -81,7 +77,7 @@ class FishiesRenderer {
             movex: 10, movey: 0,
             maxWidth: 50,
             shape: "><>",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -90,7 +86,7 @@ class FishiesRenderer {
             movex: -10, movey: 0,
             maxWidth: 50,
             shape: "<><",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -100,7 +96,7 @@ class FishiesRenderer {
             movex: -10, movey: 0,
             maxWidth: 50,
             shape: "<><",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -109,7 +105,7 @@ class FishiesRenderer {
             movex: -10, movey: 0,
             maxWidth: 50,
             shape: "<><",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
 
@@ -119,13 +115,13 @@ class FishiesRenderer {
             movex: -10, movey: 0,
             maxWidth: 50,
             shape: "<><",
-            fillStyle: "black",
+            fillStyle: "#fff",
             speed: Math.floor(TIME_S / 10),
         });
     }
 
     private clear(figure: Figure) {
-        this.context.fillStyle = "white";
+        this.context.fillStyle = this.background;
         const textWidth = this.context.measureText(figure.shape).width;
         this.context.fillRect(figure.x!, figure.y! - this.fontsize, textWidth, this.fontsize);
     }
@@ -167,16 +163,17 @@ class FishiesRenderer {
 
     private reset(figure: Figure) {
         clearInterval(figure.interval);
-        console.info(
-            "Cleared at x:%d, y:%d. No moves possible! Maybe set movex or movey?",
-            figure.x, figure.y,
-        );
+        console.info("Cleared at x:%d, y:%d", figure.x, figure.y);
         figure.interval = undefined;
         figure.x = undefined;
         figure.y = undefined;
-        this.draw(figure);
+        // Loop it endlessly
+        // this.draw(figure);
     }
 
+    /**
+     * Render all figures again. Should only be called once.
+    */
     render() {
         this.prerender();
         for (const figure of this.figures) {
@@ -184,7 +181,19 @@ class FishiesRenderer {
         }
     }
 
-    destroy() {
+    /**
+     * Start/Resume the drawing.
+    */
+    start() {
+        for (const figure of this.figures) {
+            this.draw(figure);
+        }
+    }
+
+    /**
+     * Stop the drawing.
+    */
+    stop() {
         for (const figure of this.figures) {
             clearInterval(figure.interval);
         }
